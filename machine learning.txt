@@ -1,0 +1,88 @@
+home_data.columns --> to display the columns name in the datasets 
+
+****** we can from a dataset select just the columns name that we want !!*********
+only one --> y = melbourne_data.Price
+ many -----> feature_names = ["LotArea", "YearBuilt", "1stFlrSF", "2ndFlrSF",
+                      "FullBath", "BedroomAbvGr", "TotRmsAbvGrd"]
+           X=home_data[feature_names]
+X.describe() --> to show the datasets with only that columns 
+X.head() --> display only the top lines of the dataset 
+remarque --> we usually use x.describe()
+****************how to drop unexisting data ?********************
+melbourne_data = melbourne_data.dropna(axis=0)
+****************Specify and Fit Model*****************************
+we will use the scikit-learn librery --> the most popular library for modeling the types of data 
+typically stored in DataFrames.
+it is used for Classification /regression and Clustering 
+--->we will use a DecisionTreeRegressor model because we are forking with dataframe
+iowa_model = DecisionTreeRegressor(random_state=1)-->pecifying a number for random_state ensures you get the same results in each run.
+************************1-Split Your Data*****************************
+from sklearn.model_selection import train_test_split
+
+# fill in and uncomment
+train_X, val_X, train_y, val_y = train_test_split(X, y, random_state = 1)
+# Fit the model
+iowa_model .fit(X, y)
+
+******************2-Specify and Fit the Model *****************************************
+we spent the data into two train data and validation data 
+from sklearn.model_selection import train_test_split--> to split the data into test and validation data
+--> we always fit with the training data train_X, train_y and we validate with the validation data val_X,val_y
+
+
+iowa_model =  DecisionTreeRegressor(random_state = 1)
+​
+# Fit iowa_model with the training data.
+iowa_model.fit(train_X, train_y)
+
+********************Calculate the Mean Absolute Error in Validation Data**************************************
+val_mae = mean_absolute_error(val_y, val_predictions)
+
+****************************************************************************************************************
+*****************************************************************************************************************
+Is that MAE good? There isn't a general rule for what values are good that applies across applications. 
+But you'll see how to use (and improve) this number in the next step.
+*******************************************Underfitting and Overfitting**********************************************************************
+****************Compare Different Tree Sizes*************************
+---> tree's depth is a measure of how many splits it makes before coming to a prediction.
+overfiting -->Leaves with very few houses will make predictions that are quite close to those homes' actual values, 
+but they may make very unreliable predictions for new data (because each prediction is based on only a few houses).
+This is a phenomenon called overfitting,where a model matches the training data almost perfectly, but does poorly in validation and other new data..
+underfiting --> When a model fails to capture important distinctions and patterns in the data, 
+so it performs poorly even in training data, that is called underfitting.
+7na lazem na7akmou the midelle
+max_leaf_nodes-->it's the solution for underfitting and ovorfitting
+--->We can use a for-loop to compare the accuracy of models built with different values for max_leaf_nodes.
+for max_leaf_nodes in [5, 50, 500, 5000]:
+    my_mae = get_mae(max_leaf_nodes, train_X, val_X, train_y, val_y)
+    print("Max leaf nodes: %d  \t\t Mean Absolute Error:  %d" %(max_leaf_nodes, my_mae))
+validation data -->We use validation data, which isn't used in model training, to measure a candidate model's accuracy.
+ This lets us try many candidate models and keep the best one.
+***********************************************************************
+***********************************************************************
+***************Fit Model Using All Data********************************
+أنت تعرف أفضل حجم للشجرة. إذا كنت تنوي نشر هذا النموذج عمليًا ، فستجعله أكثر دقة باستخدام جميع البيانات والحفاظ على حجم الشجرة هذا. أي أنك لست بحاجة إلى الاحتفاظ ببيانات التحقق الآن بعد أن اتخذت جميع قراراتك المتعلقة بالنمذجة.
+after finding the best tree size we train make our model with all the data 
+--> inal_model = DecisionTreeRegressor(max_leaf_nodes=best_tree_size, random_state=1)
+      # fit the final model
+      final_model.fit(X, y)
+
+*****************************************random forest******************************************************************************
+random forest is another model better than decision tree to avoid overfiting and underfiting 
+randeom forest --> use many dicision tree and calculate it's avrege 
+**************************how to build a a random forest model ?************************************************
+We build a random forest model similarly to how we built a decision tree
+ this time using the RandomForestRegressor class instead of DecisionTreeRegressor
+from sklearn.ensemble import RandomForestRegressor
+from sklearn.metrics import mean_absolute_error
+
+forest_model = RandomForestRegressor(random_state=1)
+forest_model.fit(train_X, train_y)
+melb_preds = forest_model.predict(val_X)
+print(mean_absolute_error(val_y, melb_preds))
+********************************************************************************************************************
+*************************************whay random forest?*************************************************
+one of the best features of Random Forest models is that they generally work reasonably even without this tuning.
+-->  read test data file using pandas
+test_data = pd.read_csv(test_data_path, sep=" ")
+
